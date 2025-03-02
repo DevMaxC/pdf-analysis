@@ -1,15 +1,17 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { getPdfPageImages } from "./pdf";
+import { getPdfPageImages, getPdfPageText } from "./pdf";
 import * as ncp from "copy-paste";
 import { promisify } from "util";
 import { OpenAI } from "openai";
 import {
   checkIfStatement,
   extractTransactionDetails,
+  fraudDetection,
   getStatementDetails,
 } from "./openai";
+import { calculateBalance } from "./utils";
 
 const copyToClipboard = promisify(ncp.copy);
 
@@ -38,6 +40,7 @@ async function main() {
 
   const {
     valid,
+    thoughts,
     originalBalance,
     finalBalance,
     calculatedBalance,
@@ -46,17 +49,50 @@ async function main() {
 
   if (!valid) {
     console.log("Transaction details are not valid");
-    console.log("Original balance:", originalBalance);
-    console.log("Final balance on statement:", finalBalance);
-    console.log("Calculated balance:", calculatedBalance);
-    console.log("Transactions:", transactions);
-
-    return;
   }
 
   console.log("Transaction details are valid");
 
+  console.log(`////////////////////////////////`);
+  console.log("Original balance:", originalBalance);
+  console.log("Final balance on statement:", finalBalance);
+  console.log("Calculated balance:", calculatedBalance);
+  console.log("Transactions:", transactions);
+  console.log("Thoughts:", thoughts);
+  console.log("///////////////////////////////////");
+
+  const manualBalance = calculateBalance(
+    originalBalance.value,
+    transactions.map((transaction) => ({
+      amount: transaction.amount.value,
+      type: transaction.amount.type,
+    }))
+  );
+
+  console.log("Manual balance:", manualBalance);
+
   /// part 2
+
+  const pageTexts = await getPdfPageText("./pdfs/statement1.pdf");
+
+  const {
+    documentAnalysis,
+    fraudThoughts,
+    concludingThoughts,
+    fraudLikelihood,
+    fraudFinal,
+  } = await fraudDetection(
+    pageImages.map((image, index) => ({
+      imageUrl: image,
+      extractedText: pageTexts[index],
+    }))
+  );
+
+  console.log("Document analysis:", documentAnalysis);
+  console.log("Fraud likelihood:", fraudLikelihood);
+  console.log("Fraud thoughts:", fraudThoughts);
+  console.log("Concluding thoughts:", concludingThoughts);
+  console.log("Fraud final:", fraudFinal);
 }
 
 main();

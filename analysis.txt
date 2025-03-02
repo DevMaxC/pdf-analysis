@@ -1,0 +1,40 @@
+Starting...
+Document is a statement
+Name: MESSRS T TESTER & SON
+Address: 1 TEST STREET, TEST TOWN, TE5 7ER
+Transaction details are not valid
+Transaction details are valid
+////////////////////////////////
+Original balance: { currency: 'GBP', currencySymbol: '£', value: 1803.9 }
+Final balance on statement: { currency: 'GBP', currencySymbol: '£', value: 300.2 }
+Calculated balance: { currency: 'GBP', currencySymbol: '£', value: 1231.24 }
+Transactions: [
+  {
+    date: '22 Oct 2024',
+    description: 'AUTOMATED PAY IN 650274051211-CHB',
+    amount: {
+      currency: 'GBP',
+      currencySymbol: '£',
+      value: 190.4,
+      type: 'incoming',
+      optionalOtherDetails: 'auto payin'
+    }
+  }
+]
+Thoughts: From what is visible on the statement, we have a previous balance of £1803.90 and a final (new) balance of £300.20. However, when we classify the listed amounts as incoming or outgoing and total them, we do not arrive at £300.20, so there is a mismatch. It appears some of the data may be partial or hidden. Below is a best-effort extraction of the items shown.
+///////////////////////////////////
+Manual balance: 1994.3000000000002
+Document analysis: The document appears to be a bank statement for an account numbered 1111111 with sort code 16-10-00, covering the period from 22 Oct 2024 to 21 Dec 2024. It has entries labeled as BACS, Faster Payments, CHQ, and Direct Debits for various recipients and payors. The formatting resembles a genuine statement layout (branch details, account holder name, etc.), and certain entries (like OVO Energy and HMRC) appear typical. However, the header and branch details list placeholders instead of real names (e.g., “ANY BANK,” “ANY BRACH,” “ANY TOWN”), and “BRIGHT FORWARD” may be a typographical error for “Brought Forward.” Furthermore, the address data is clearly generic, suggesting this document may be a template or highly edited file rather than a genuine statement.
+Fraud likelihood: 85
+Fraud thoughts: There are multiple signs that this statement could be fraudulent or at least not genuine: the branch information is left as ‘ANY BRACH ANY STREET ANY TOWN,’ which looks like placeholder text or a poorly edited original. The misspelling of ‘BRIGHT FORWARD’ suggests manual modification. These errors are often indicative of templated or doctored statements.
+Concluding thoughts: Despite the statement having many of the standard elements you would expect in a bank statement, the presence of obvious placeholders and typographical issues suggests it is likely not an authentic statement but rather an edited or fabricated template. 
+Fraud final: [
+  {
+    fraudThought: 'Branch information shows ‘ANY BRACH ANY STREET ANY TOWN,’ which is generic placeholder text rather than real data.',  
+    causeForConcern: 'high'
+  },
+  {
+    fraudThought: '‘BRIGHT FORWARD’ instead of ‘Brought Forward’ indicates editing errors or poor document preparation.',
+    causeForConcern: 'medium'
+  }
+]

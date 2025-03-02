@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { PDFExtract, PDFExtractOptions } from "pdf.js-extract";
 
 const execAsync = promisify(exec);
 
@@ -71,4 +72,13 @@ async function getPdfPageImages(pdfPath: string): Promise<string[]> {
   }
 }
 
-export { getPdfPageImages };
+async function getPdfPageText(pdfPath: string): Promise<string[]> {
+  const pdfExtract = new PDFExtract();
+  const options: PDFExtractOptions = {}; /* see below */
+  const data = await pdfExtract.extract(pdfPath, options);
+  return data.pages.map((page) =>
+    page.content.map((item) => item.str).join("\n")
+  );
+}
+
+export { getPdfPageImages, getPdfPageText };
